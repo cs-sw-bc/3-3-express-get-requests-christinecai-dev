@@ -25,14 +25,30 @@ app.get("/", (req, res) => {
   res.send("Welcome to the Users API!");
 });
 
-app.get("/users", (req, res) => {
-    // For now, we're using hardcoded JSON data
-    let randomUser = HARD_CODED_JSON.results[0];
-    res.json(randomUser);
+// app.get("/users", (req, res) => {
+//     // For now, we're using hardcoded JSON data
+//     let randomUser = HARD_CODED_JSON.results[0];
+//     res.json(randomUser);
 
-    // TODO: Replace the hardcoded JSON with a real API request to get a random user
-    // For example, you might use the `axios` library to make a GET request to the API endpoint
-  });
+//     // TODO: Replace the hardcoded JSON with a real API request to get a random user
+//     // For example, you might use the `axios` library to make a GET request to the API endpoint
+//   });
+
+app.get("/users", async (req,res)=>{
+  try{
+    const response = await fetch ("http://randomuser.me/api");
+    if(!response.ok) throw new Error("Random User API failed");
+
+    const apiData = await response.json();
+    const randomUser = apiData.results[0];
+    res.json(randomUser);
+  }catch(err){
+    console.error("Random User fetch error:", err);
+    res.status(500).json({message:"Unable to fetch random user"});
+  }
+
+});
+
 
 app.listen(3000, () => {
   console.log("Server is running on port 3000");
